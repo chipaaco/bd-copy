@@ -3,7 +3,7 @@ browser.runtime.onMessage.addListener((request) => {
         const viewerDiv = document.querySelector("div.viewer");
 
         if (viewerDiv) {
-            // 1. Obtener encabezados (Sección y Lección)
+            // 1. Extracción de encabezados (Sección y Lección)
             const headers = document.querySelectorAll(
                 "span.flex.h-6.items-center.overflow-hidden.text-ellipsis.text-left.w-40.lg",
             );
@@ -15,61 +15,101 @@ browser.runtime.onMessage.addListener((request) => {
                 headerText = `${section} - ${lesson}\n\n`;
             }
 
-            // 2. Limpiar el HTML
+            // 2. Limpieza del HTML
             const cleanHtml = getCleanHtml(viewerDiv);
 
-            // 3. Concatenar y copiar
+            // 3. Concatenación y copiado
             const finalPayload = headerText + cleanHtml;
 
             navigator.clipboard
                 .writeText(finalPayload)
                 .then(() => {
-                    console.log("Contenido limpio copiado exitosamente.");
+                    showNotification("¡Contenido copiado al portapapeles!");
                 })
                 .catch((err) => {
                     console.error("Error al copiar:", err);
+                    showNotification("Error al copiar", true);
                 });
+        } else {
+            showNotification("No se encontró el contenido de la lección", true);
         }
     }
 });
 
 /**
- * Genera una versión limpia del HTML manteniendo solo etiquetas de contenido
- * y atributos permitidos.
+ * Muestra una notificación visual temporal en la pantalla
  */
-function getCleanHtml(originalNode) {
-    // Lista blanca de atributos permitidos
-    const include_stuff = ["href", "src", "alt", "title", "target", "controls"];
+function showNotification(message, isError = false) {
+    // Crear elemento
+    const notification = document.createElement("div");
 
-    // Etiquetas que se eliminarán por completo (su contenido tampoco sirve para apuntes de texto)
-    const tagsToRemove = ["script", "style", "svg", "path", "circle", "button"];
-
-    // Clonamos el nodo para no modificar la página web real visible
-    const clone = originalNode.cloneNode(true);
-
-    // A. Eliminar etiquetas basura
-    tagsToRemove.forEach((tagName) => {
-        const elements = clone.querySelectorAll(tagName);
-        elements.forEach((el) => el.remove());
+    // Estilos visuales (inline para evitar CSS externo)
+    notification.innerText = message;
+    Object.assign(notification.style, {
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        padding: "12px 24px",
+        backgroundColor: isError ? "#ef4444" : "#10b981", // Rojo / Verde
+        color: "#ffffff",
+        borderRadius: "8px",
+        zIndex: "999999", // Por encima de todo
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+        fontWeight: "600",
+        fontSize: "14px",
+        pointerEvents: "none", // Permite clics debajo
+        opacity: "0",
+        transition: "opacity 0.3s ease-in-out",
+        transform: "translateY(-10px)", // Pequeña animación de entrada
     });
 
-    // B. Limpiar atributos en todos los elementos restantes
-    const allElements = clone.querySelectorAll("*");
+    document.body.appendChild(notification);
 
-    allElements.forEach((el) => {
-        // Convertimos a array para poder iterar y borrar sin conflictos
-        const attrs = Array.from(el.attributes);
+    // Animación de entrada
+    requestAnimationFrame(() => {
+        notification.style.opacity = "1";
+        notification.style.transform = "translateY(0)";
+    });
 
-        attrs.forEach((attr) => {
+    // Retirar notificación después de 1.5 segundos
+    setTimeout(() => {
+        notification.style.opacity = "0";
+        notification.style.transform = "translateY(-10px)";
+        setTimeout(() => notification.remove(), 300);
+    }, 1500);
+}
+
+/**
+ * Limpia el HTML de atributos y etiquetas no deseados
+ */
+function getCleanHtml(originalNode) {
+    const include_stuff = ["href", "src", "alt", "title", "target", "controls"];
+    const tagsToRemove = [
+        "script",
+        "style",
+        "svg",
+        "path",
+        "circle",
+        "button",
+        "iframe",
+    ];
+
+    const clone = originalNode.cloneNode(true);
+
+    // Eliminar etiquetas basura
+    tagsToRemove.forEach((tagName) => {
+        clone.querySelectorAll(tagName).forEach((el) => el.remove());
+    });
+
+    // Limpiar atributos
+    clone.querySelectorAll("*").forEach((el) => {
+        Array.from(el.attributes).forEach((attr) => {
             if (!include_stuff.includes(attr.name.toLowerCase())) {
                 el.removeAttribute(attr.name);
             }
         });
-
-        // Opcional: Si una etiqueta queda vacía de atributos y contenido (como un div vacío), se podría borrar,
-        // pero por seguridad mantenemos la estructura semántica.
     });
 
-    // Retornamos el HTML limpio, eliminando espacios en blanco excesivos al inicio/final
     return clone.innerHTML.trim();
 }
