@@ -1,0 +1,28 @@
+{
+    "manifest_version": 2,
+    "name": "bootdev fastcopy",
+    "version": "1.0",
+    "description": "asdf",
+    "icons": {
+        "48": "icon.png"
+    },
+    "permissions": ["clipboardWrite", "activeTab"],
+    "content_scripts": [
+        {
+            "matches": ["https://www.boot.dev/lessons/*"],
+            "js": ["content.js"]
+        }
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "browser_action": {
+        "default_icon": "icon.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "@addon-example",
+            "strict_min_version": "58.0"
+        }
+    }
+}
