@@ -12,7 +12,8 @@ browser.runtime.onMessage.addListener((request) => {
             if (headers.length > 0) {
                 const section = headers[0] ? headers[0].textContent.trim() : "";
                 const lesson = headers[1] ? headers[1].textContent.trim() : "";
-                headerText = `${section} - ${lesson}\n\n`;
+                // headerText = `${section} - ${lesson}\n\n`;
+                headerText = `${lesson}\n\n`;
             }
 
             // 2. Limpieza del HTML
@@ -111,5 +112,5 @@ function getCleanHtml(originalNode) {
         });
     });
 
-    return clone.innerHTML.trim();
+    return clone.innerText.trim();
 }
