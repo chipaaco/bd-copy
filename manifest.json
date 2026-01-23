@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "bootdev fastcopy",
+    "name": "bd-copy",
     "version": "1.0",
-    "description": "asdf",
+    "description": "Optimiza el flujo de estudio en la plataforma boot.dev, permitiendo copiar el contenido de las lecciones directamente al portapapeles.",
     "icons": {
         "48": "icon.png"
     },
