@@ -11,7 +11,7 @@ browser.runtime.onMessage.addListener((request) => {
             let titleText = "";
             if (headers.length > 0) {
                 // Usamos el segundo span (Lección) como título principal
-                chapter = headers[0] ? headers[1].textContent.trim() : "";
+                chapter = headers[0] ? headers[0].textContent.trim() : "";
                 lesson = headers[1] ? headers[1].textContent.trim() : "";
                 titleText = `${chapter} - ${lesson}`;
             }
