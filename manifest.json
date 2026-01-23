@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "bd-copy",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Optimiza el flujo de estudio en la plataforma boot.dev, permitiendo copiar el contenido de las lecciones directamente al portapapeles.",
     "icons": {
         "48": "icon.png"
