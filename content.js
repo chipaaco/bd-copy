@@ -19,6 +19,13 @@ browser.runtime.onMessage.addListener((request) => {
             // 2. Limpieza del HTML (Obtenemos el nodo procesado)
             const cleanNode = getCleanNode(viewerDiv);
 
+            const codeBlocks = cleanNode.querySelectorAll("pre, code");
+            codeBlocks.forEach((block) => {
+                block.style.fontFamily = "Consolas, 'Courier New', monospace";
+                // Opcional: Añadir fondo gris para diferenciarlo
+                block.style.backgroundColor = "#f5f5f5";
+            });
+
             // 3. Extracción y Procesamiento de Enlaces
             const links = cleanNode.querySelectorAll("a");
             let linksHtmlFooter = "";
@@ -52,6 +59,7 @@ browser.runtime.onMessage.addListener((request) => {
             }
 
             // 4. Construcción de Payloads (HTML y Texto)
+            const currentUrl = window.location.href;
 
             // Payload Texto Plano
             const plainTextPayload =
@@ -60,10 +68,10 @@ browser.runtime.onMessage.addListener((request) => {
                 linksTextFooter;
 
             // Payload HTML (Envuelto en div gris)
-            const htmlContent = cleanNode.innerText;
+            const htmlContent = cleanNode.innerHTML;
             const htmlPayload = `
                 <div style="color: #888888; font-family: Calibri, Arial, sans-serif; font-size: 11pt;">
-                    ${titleText ? `<p style="color: #666666;">${titleText}</p><br/><br/>` : ""}
+                    ${titleText ? `<p style="color: #666666;"><a href="${currentUrl}" style="color: #666666; text-decoration: underline;">${titleText}</a></p><br/><br/>` : ""}
                     ${htmlContent}
                     ${linksHtmlFooter}
                 </div>
