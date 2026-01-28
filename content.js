@@ -4,15 +4,16 @@ browser.runtime.onMessage.addListener((request) => {
 
         if (viewerDiv) {
             // 1. Extracción del Título
+            // Se eliminó '.items-center' del selector para coincidir con el nuevo HTML
             const headers = document.querySelectorAll(
-                "span.flex.h-6.items-center.overflow-hidden.text-ellipsis.text-left.w-40.lg",
+                "span.flex.h-6.overflow-hidden.text-ellipsis.text-left.w-40.lg",
             );
 
             let titleText = "";
             if (headers.length > 0) {
-                // Usamos el segundo span (Lección) como título principal
-                chapter = headers[0] ? headers[0].textContent.trim() : "";
-                lesson = headers[1] ? headers[1].textContent.trim() : "";
+                // El orden en el DOM sigue siendo [0] Capítulo, [1] Lección
+                const chapter = headers[0] ? headers[0].textContent.trim() : "";
+                const lesson = headers[1] ? headers[1].textContent.trim() : "";
                 titleText = `${chapter} - ${lesson}`;
             }
 
